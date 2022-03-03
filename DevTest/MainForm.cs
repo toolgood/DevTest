@@ -1,4 +1,5 @@
 using DevTest.HttpServer;
+using Microsoft.Win32;
 using System.Text.RegularExpressions;
 
 namespace DevTest
@@ -169,7 +170,43 @@ namespace DevTest
 
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            System.Diagnostics.Process.Start("https://github.com/toolgood/DevTest");
+            var exePath = GetDefaultWebBrowserFilePath();
+            System.Diagnostics.Process.Start(exePath, "https://github.com/toolgood/DevTest");
+        }
+        public static String GetDefaultWebBrowserFilePath()
+        {
+            string _BrowserKey1 = @"Software\Clients\StartmenuInternet\";
+            string _BrowserKey2 = @"shell\open\command";
+            string outPath;
+
+            RegistryKey localKey;
+            if (Environment.Is64BitOperatingSystem) {
+                localKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64);
+            } else {
+                localKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32);
+            }
+
+            RegistryKey _RegistryKey = localKey.OpenSubKey(_BrowserKey1, false);
+            var names = _RegistryKey.GetSubKeyNames();
+            if (names.Contains("Google Chrome")) {
+                var key = _RegistryKey.OpenSubKey("Google Chrome").OpenSubKey(_BrowserKey2);
+                outPath = key.GetValue("").ToString();
+            } else if (names.Any(q => q.StartsWith("Firefox"))) {
+                var name = names.Where(q => q.StartsWith("Firefox")).FirstOrDefault();
+                var key = _RegistryKey.OpenSubKey(name).OpenSubKey(_BrowserKey2);
+                outPath = key.GetValue("").ToString();
+            } else {
+                String name = _RegistryKey.GetValue("").ToString();
+                var key = _RegistryKey.OpenSubKey(name).OpenSubKey(_BrowserKey2);
+                outPath = key.GetValue("").ToString();
+            }
+            _RegistryKey.Close();
+
+            if (outPath.Contains("\"")) {
+                outPath = outPath.TrimStart('"');
+                outPath = outPath.Substring(0, outPath.IndexOf('"'));
+            }
+            return outPath;
         }
     }
 }
