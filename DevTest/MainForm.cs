@@ -16,11 +16,10 @@ namespace DevTest
         private void MainForm_Load(object sender, EventArgs e)
         {
             maps = UrlMap.Load(mapFile);
-            foreach (var item in maps)
-            {
+            foreach (var item in maps) {
                 this.listBox1.Items.Add(item);
             }
-            myHttpServer=new MyHttpServer();
+            myHttpServer = new MyHttpServer();
             myHttpServer.SetUrlMap(maps);
             myHttpServer.Start();
             //°ó¶¨Host
@@ -46,13 +45,11 @@ namespace DevTest
             UrlMapForm form = new UrlMapForm();
             form.UrlMap = map;
             form.Render();
-            if (form.ShowDialog() == DialogResult.OK)
-            {
+            if (form.ShowDialog() == DialogResult.OK) {
                 maps.Add(map);
                 UrlMap.Save(maps, mapFile);
                 this.listBox1.Items.Clear();
-                foreach (var item in maps)
-                {
+                foreach (var item in maps) {
                     this.listBox1.Items.Add(item);
                 }
                 myHttpServer.SetUrlMap(maps);
@@ -69,7 +66,7 @@ namespace DevTest
         {
             button2_Click(null, null);
         }
-        
+
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
 
@@ -81,18 +78,15 @@ namespace DevTest
         /// <param name="e"></param>
         private void button2_Click(object sender, EventArgs e)
         {
-            if (this.listBox1.SelectedIndex >= 0)
-            {
+            if (this.listBox1.SelectedIndex >= 0) {
                 var map = this.listBox1.SelectedItem as UrlMap;
                 UrlMapForm form = new UrlMapForm();
                 form.UrlMap = map;
                 form.Render();
-                if (form.ShowDialog() == DialogResult.OK)
-                {
+                if (form.ShowDialog() == DialogResult.OK) {
                     UrlMap.Save(maps, mapFile);
                     this.listBox1.Items.Clear();
-                    foreach (var item in maps)
-                    {
+                    foreach (var item in maps) {
                         this.listBox1.Items.Add(item);
                     }
                     myHttpServer.SetUrlMap(maps);
@@ -109,16 +103,13 @@ namespace DevTest
         /// <param name="e"></param>
         private void button3_Click(object sender, EventArgs e)
         {
-            if (this.listBox1.SelectedIndex >= 0)
-            {
+            if (this.listBox1.SelectedIndex >= 0) {
                 var map = this.listBox1.SelectedItem as UrlMap;
-                if (MessageBox.Show("ÊÇ·ñÉ¾³ý" + map.Host, "", MessageBoxButtons.YesNo) == DialogResult.Yes)
-                {
+                if (MessageBox.Show("ÊÇ·ñÉ¾³ý" + map.Host, "", MessageBoxButtons.YesNo) == DialogResult.Yes) {
                     maps.Remove(map);
                     UrlMap.Save(maps, mapFile);
                     this.listBox1.Items.Clear();
-                    foreach (var item in maps)
-                    {
+                    foreach (var item in maps) {
                         this.listBox1.Items.Add(item);
                     }
                     myHttpServer.SetUrlMap(maps);
@@ -137,23 +128,18 @@ namespace DevTest
             var hostFile = @"C:\windows\system32\drivers\etc\hosts";
             var list = File.ReadAllLines(hostFile).ToList();
 
-            foreach (var item in maps)
-            {
+            foreach (var item in maps) {
                 Regex regex = new Regex(@$"^{item.NewIp.Split(':')[0].Replace(".", "\\.")}[ \t]+{item.Host.Replace(".", "\\.")}[ \t]*$", RegexOptions.IgnoreCase);
-                for (int i = list.Count - 1; i >= 0; i--)
-                {
+                for (int i = list.Count - 1; i >= 0; i--) {
                     var str = list[i];
-                    if (regex.IsMatch(str))
-                    {
+                    if (regex.IsMatch(str)) {
                         list.RemoveAt(i);
                     }
                 }
             }
-            foreach (var item in maps)
-            {
-                if (item.Used)
-                {
-                    list.Add($"{item.NewIp.Split(':')[0]} {item.Host}");
+            foreach (var item in maps) {
+                if (item.Used) {
+                    list.Insert(0, $"{item.NewIp.Split(':')[0]} {item.Host}");
                 }
             }
             File.WriteAllLines(hostFile, list.ToArray());
@@ -169,14 +155,11 @@ namespace DevTest
             var hostFile = @"C:\windows\system32\drivers\etc\hosts";
             var list = File.ReadAllLines(hostFile).ToList();
 
-            foreach (var item in maps)
-            {
+            foreach (var item in maps) {
                 Regex regex = new Regex(@$"^{item.NewIp.Split(':')[0].Replace(".", "\\.")}[ \t]+{item.Host.Replace(".", "\\.")}[ \t]*$", RegexOptions.IgnoreCase);
-                for (int i = list.Count - 1; i >= 0; i--)
-                {
+                for (int i = list.Count - 1; i >= 0; i--) {
                     var str = list[i];
-                    if (regex.IsMatch(str))
-                    {
+                    if (regex.IsMatch(str)) {
                         list.RemoveAt(i);
                     }
                 }
@@ -184,6 +167,9 @@ namespace DevTest
             File.WriteAllLines(hostFile, list.ToArray());
         }
 
-
+        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://github.com/toolgood/DevTest");
+        }
     }
 }
